@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set +x
+#set -x
 
 SOURCE_DIR=${1:-lab_uno}
 RM_LIST=${2:-2remove}
@@ -14,23 +14,25 @@ mkdir ${TARGET_DIR}
 TRASH=$(cat "${SOURCE_DIR}/${RM_LIST}")
 #echo $TRASH
 
-# usuwanie plikow
-for element in ${TRASH}
+# deleting files
+for ELEMENT in ${TRASH}
 do
-	# echo "${SOURCE_DIR}/${element}"
-  if [[ -e "${SOURCE_DIR}/${element}" ]] #na razie usuwa wszystko -> pliki foldery, jeśli tylko pliki to -f 
+	# echo "${SOURCE_DIR}/${ELEMENT}"
+  #to delete ONLY files its necessery to change flag to: '-f'
+  #as of right now it deletes folders/directories
+  if [[ -e "${SOURCE_DIR}/${ELEMENT}" ]]  
   then
-    rm -rf "${SOURCE_DIR}/${element}"
+    rm -rf "${SOURCE_DIR}/${ELEMENT}"
   fi
 done
-# archiwzacja 
+# archiving 
 
 ARCHIVE=$(ls ${SOURCE_DIR})
-echo $ARCHIVE
+#echo $ARCHIVE
 
 for VAR in ${ARCHIVE}
 do
-	# echo "${SOURCE_DIR}/${element}"
+	# echo "${SOURCE_DIR}/${ELEMENT}"
   if [[ -d "${SOURCE_DIR}/${VAR}" ]] 
   then
     cp -r "${SOURCE_DIR}/${VAR}" "${TARGET_DIR}/${VAR}"
@@ -41,3 +43,24 @@ do
     fi
   fi
 done
+# checking nonarchiveable leftovers 
+LEFTOVERS=$(ls -l ${SOURCE_DIR} | wc -l)
+LEFTOVERS=$((LEFTOVERS-1))
+echo $LEFTOVERS
+
+if [[ $LEFTOVERS -gt 0 ]]; then
+  echo "jeszcze coś zostało"
+  #conajmniej 2 pliki
+  if [[ $LEFTOVERS -ge 2 ]]; then 
+    echo "zostały conajmniej 2 pliki"
+    if [[ $LEFTOVERS -gt 4 ]]; then
+      echo "zostało więcej niż 4 pliki"
+    fi
+  fi
+else 
+  echo "tu był kononowicz"
+fi
+
+DATE=$(date +%Y-%m-%d)
+zip -r "${TARGET_DIR}_${DATE}.zip" "${TARGET_DIR}"
+echo "zarchiwizowano"
