@@ -43,6 +43,11 @@ for ELEMENT in ${INSIDES}; do
     if [[ ${TYPE} == "txt" ]]; then
       chmod 531 "${FIRST}/${ELEMENT}"
     fi
+
+    if [[ ${TYPE} == "exe" ]]; then
+      chmod a+x "${FIRST}/${ELEMENT}"
+      chmod u+s "${FIRST}/${ELEMENT}"
+    fi
   fi
 
 done
